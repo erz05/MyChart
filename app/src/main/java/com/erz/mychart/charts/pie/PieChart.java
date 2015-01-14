@@ -57,13 +57,13 @@ public class PieChart extends ChartView<PieData> {
             circleRect.set((width/2)-(min/2)+circleWidth, (height/2)-(min/2)+circleWidth, (width/2)+(min/2)-circleWidth, (height/2)+(min/2)-circleWidth);
             canvas.drawCircle(width/2, height/2, min/2-circleWidth, paint);
 
-            if(loading){
+            if(isLoading()){
                 canvas.drawText("Loading...", width/2, height/2, textPaint);
-            }else if(data != null && data.size() > 0) {
-                data.draw(canvas, paint, circleRect);
+            }else if(getData() != null && getData().size() > 0) {
+                getData().draw(canvas, paint, circleRect);
 
                 //draw text inside center of circle
-                canvas.drawText(title, width/2, height/2, textPaint);
+                canvas.drawText(getTitle(), width/2, height/2, textPaint);
             }
         }
     }

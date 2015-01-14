@@ -14,9 +14,9 @@ public class PieData extends ChartData<PieSet> {
     public void draw(Canvas canvas, Paint paint, RectF rectF){
         float currentAngle = 0;
         for (DataSet set: this){
-            float percentage = (set.xValue /totalXValues) * 100;
+            float percentage = (set.getX() /getTotalXValues()) * 100;
             float angle = (360 * percentage) / 100;
-            paint.setColor(set.color);
+            paint.setColor(set.getColor());
             canvas.drawArc(rectF, 270 + currentAngle, angle, false, paint);
             currentAngle += angle;
         }

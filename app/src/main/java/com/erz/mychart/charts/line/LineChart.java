@@ -16,7 +16,9 @@ import com.erz.mychart.charts.DataSet;
  */
 public class LineChart extends ChartView<LineData> {
     Paint paint;
+    Paint linePaint;
     Paint textPaint;
+    Paint gridPaint;
     private RectF circleRect;
     public LineChart(Context context) {
         super(context);
@@ -33,11 +35,23 @@ public class LineChart extends ChartView<LineData> {
         paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
+        paint.setDither(true);
+        linePaint = new Paint();
+        linePaint.setColor(Color.RED);
+        linePaint.setStyle(Paint.Style.STROKE);
+        linePaint.setAntiAlias(true);
+        linePaint.setDither(true);
+        gridPaint = new Paint();
+        gridPaint.setColor(Color.BLUE);
+        gridPaint.setStyle(Paint.Style.STROKE);
+        gridPaint.setAntiAlias(true);
+        gridPaint.setDither(true);
         textPaint = new Paint();
         textPaint.setStyle(Paint.Style.STROKE);
-        textPaint.setColor(Color.WHITE);
+        textPaint.setColor(Color.BLACK);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setAntiAlias(true);
+        textPaint.setDither(true);
         textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
 
         circleRect = new RectF();
@@ -52,13 +66,16 @@ public class LineChart extends ChartView<LineData> {
             int circleWidth = min/10;
             textPaint.setTextSize(min/10);
             //paint.setStrokeWidth(circleWidth);
+            gridPaint.setStrokeWidth(5);
 
             circleRect.set((width/2)-(min/2)+circleWidth, (height/2)-(min/2)+circleWidth, (width/2)+(min/2)-circleWidth, (height/2)+(min/2)-circleWidth);
 
-            if(loading){
+            LineData data = getData();
+
+            if(isLoading()){
                 canvas.drawText("Loading ...", width/2, height/2, textPaint);
             }else if(data != null && data.size() > 0) {
-                float segMin = Math.min(data.xMax, data.yMax);
+                float segMin = Math.min(data.getxMax(), data.getyMax());
                 int seg = 15;
                 if(segMin < 15) seg = (int)segMin;
 
@@ -74,14 +91,17 @@ public class LineChart extends ChartView<LineData> {
                 float startX = xSpacing;
                 float startY = height - ySpacing;
 
-                float xIncrements = data.xMax/seg;
-                float yIncrements = data.yMax/seg;
+                float xIncrements = data.getxMax()/seg;
+                float yIncrements = data.getyMax()/seg;
 
                 float xCount = xIncrements;
                 float yCount = yIncrements;
                 for(int i=0; i<seg; i++){
                     canvas.drawText(""+(int)xCount, startX+spacing/2, height-spacing/2+textPaint.getTextSize()/2, textPaint);
                     canvas.drawText(""+(int)yCount, spacing/2, startY-spacing/2+textPaint.getTextSize()/2, textPaint);
+
+                    canvas.drawLine(0, startY-spacing/2, width, startY-spacing/2, gridPaint);
+                    canvas.drawLine(startX+spacing/2, 0, startX+spacing/2, height, gridPaint);
 
                     xCount += xIncrements;
                     startX += xSpacing;
@@ -92,15 +112,15 @@ public class LineChart extends ChartView<LineData> {
                 float radius = spacing/4;
                 DataSet previous = null;
                 for(DataSet set: data){
-                    float xValue = ((set.xValue*xSpacing)/xIncrements)+spacing - (radius*2);
-                    float yValue = (height)-((set.yValue*ySpacing)/yIncrements) - spacing + (radius*2);
+                    float xValue = ((set.getX()*xSpacing)/xIncrements)+spacing - (radius*2);
+                    float yValue = (height - spacing) - ((set.getY()*ySpacing)/yIncrements) + (radius*2);
                     if(xValue < spacing) xValue = spacing;
                     if(yValue > (height-spacing)) yValue = height-spacing;
                     canvas.drawCircle(xValue, yValue, radius, paint);
 
                     if(previous != null){
-                        float xPrev = ((previous.xValue*xSpacing)/xIncrements)+spacing - (radius*2);
-                        float yPrev = (height)-((previous.yValue*ySpacing)/yIncrements) - spacing + (radius*2);
+                        float xPrev = ((previous.getX()*xSpacing)/xIncrements)+spacing - (radius*2);
+                        float yPrev = (height - spacing) - ((previous.getY()*ySpacing)/yIncrements) + (radius*2);
                         if(xPrev < spacing) xPrev = spacing;
                         if(yPrev > (height-spacing)) yPrev = height-spacing;
                         canvas.drawLine(xPrev, yPrev, xValue, yValue, paint);

@@ -59,7 +59,8 @@ public class BarChart extends ChartView<BarData> {
 
 
 
-            if(loading){
+            BarData data = getData();
+            if(isLoading()){
                 canvas.drawText("Loading...", width/2, height/2, textPaint);
             }else if(data != null && data.size() > 0) {
                 data.draw(canvas, paint, circleRect);

@@ -4,14 +4,16 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.Collections;
+
 /**
  * Created by edgarramirez on 1/9/15.
  */
 public abstract class ChartView<DataType extends ChartData> extends View {
 
-    protected String title = "";
-    protected DataType data;
-    protected boolean loading = true;
+    private String title = "";
+    private DataType data;
+    private boolean loading = true;
 
     public ChartView(Context context) {
         super(context);
@@ -21,21 +23,36 @@ public abstract class ChartView<DataType extends ChartData> extends View {
         super(context, attrs);
     }
 
-    public void reset(){
-        loading = true;
-        data = null;
-        invalidate();
+    public boolean isLoading() {
+        return loading;
     }
 
-    public void ready(DataType data){
-        loading = false;
+    public void setLoading(boolean loading) {
+        this.loading = loading;
+    }
 
-        this.data = data;
-
-        invalidate();
+    public String getTitle() {
+        return title;
     }
 
     public void setTitle(String title){
         this.title = title;
+    }
+
+    public DataType getData() {
+        return data;
+    }
+
+    public void setData(DataType data) {
+        this.data = data;
+        Collections.sort(this.data);
+        loading = false;
+        invalidate();
+    }
+
+    public void reset(){
+        loading = true;
+        data = null;
+        invalidate();
     }
 }
